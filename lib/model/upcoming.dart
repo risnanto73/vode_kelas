@@ -9,7 +9,7 @@ Upcoming upcomingFromJson(String str) => Upcoming.fromJson(json.decode(str));
 String upcomingToJson(Upcoming data) => json.encode(data.toJson());
 
 class Upcoming {
-  final Dates dates;
+  final Dates? dates;
   final int page;
   final List<Result> results;
   final int totalPages;
@@ -24,15 +24,17 @@ class Upcoming {
   });
 
   factory Upcoming.fromJson(Map<String, dynamic> json) => Upcoming(
-    dates: Dates.fromJson(json["dates"]),
-    page: json["page"],
-    results: List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
-    totalPages: json["total_pages"],
-    totalResults: json["total_results"],
+    dates: json["dates"] == null ? null : Dates.fromJson(json["dates"]),
+    page: json["page"] ?? 1,
+    results: json["results"] == null
+        ? []
+        : List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+    totalPages: json["total_pages"] ?? 1,
+    totalResults: json["total_results"] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
-    "dates": dates.toJson(),
+    "dates": dates?.toJson(),
     "page": page,
     "results": List<dynamic>.from(results.map((x) => x.toJson())),
     "total_pages": totalPages,
@@ -41,8 +43,8 @@ class Upcoming {
 }
 
 class Dates {
-  final DateTime maximum;
-  final DateTime minimum;
+  final DateTime? maximum;
+  final DateTime? minimum;
 
   Dates({
     required this.maximum,
@@ -50,19 +52,23 @@ class Dates {
   });
 
   factory Dates.fromJson(Map<String, dynamic> json) => Dates(
-    maximum: DateTime.parse(json["maximum"]),
-    minimum: DateTime.parse(json["minimum"]),
+    maximum: DateTime.tryParse(json["maximum"]?.toString() ?? ""),
+    minimum: DateTime.tryParse(json["minimum"]?.toString() ?? ""),
   );
 
   Map<String, dynamic> toJson() => {
-    "maximum": "${maximum.year.toString().padLeft(4, '0')}-${maximum.month.toString().padLeft(2, '0')}-${maximum.day.toString().padLeft(2, '0')}",
-    "minimum": "${minimum.year.toString().padLeft(4, '0')}-${minimum.month.toString().padLeft(2, '0')}-${minimum.day.toString().padLeft(2, '0')}",
+    "maximum": maximum == null
+        ? null
+        : "${maximum!.year.toString().padLeft(4, '0')}-${maximum!.month.toString().padLeft(2, '0')}-${maximum!.day.toString().padLeft(2, '0')}",
+    "minimum": minimum == null
+        ? null
+        : "${minimum!.year.toString().padLeft(4, '0')}-${minimum!.month.toString().padLeft(2, '0')}-${minimum!.day.toString().padLeft(2, '0')}",
   };
 }
 
 class Result {
   final bool adult;
-  final String backdropPath;
+  final String? backdropPath;
   final List<int> genreIds;
   final int id;
   final String title;
@@ -70,8 +76,8 @@ class Result {
   final String originalTitle;
   final String overview;
   final double popularity;
-  final String posterPath;
-  final DateTime releaseDate;
+  final String? posterPath;
+  final DateTime? releaseDate;
   final bool softcore;
   final bool video;
   final double voteAverage;
@@ -96,21 +102,24 @@ class Result {
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    adult: json["adult"],
+    adult: json["adult"] ?? false,
     backdropPath: json["backdrop_path"],
-    genreIds: List<int>.from(json["genre_ids"].map((x) => x)),
-    id: json["id"],
-    title: json["title"],
-    originalLanguage: originalLanguageValues.map[json["original_language"]]!,
-    originalTitle: json["original_title"],
-    overview: json["overview"],
-    popularity: json["popularity"]?.toDouble(),
+    genreIds: json["genre_ids"] == null
+        ? []
+        : List<int>.from(json["genre_ids"].map((x) => x as int)),
+    id: json["id"] ?? 0,
+    title: json["title"] ?? "",
+    originalLanguage:
+        originalLanguageValues.map[json["original_language"]] ?? OriginalLanguage.OTHER,
+    originalTitle: json["original_title"] ?? "",
+    overview: json["overview"] ?? "",
+    popularity: (json["popularity"] as num?)?.toDouble() ?? 0.0,
     posterPath: json["poster_path"],
-    releaseDate: DateTime.parse(json["release_date"]),
-    softcore: json["softcore"],
-    video: json["video"],
-    voteAverage: json["vote_average"]?.toDouble(),
-    voteCount: json["vote_count"],
+    releaseDate: DateTime.tryParse(json["release_date"]?.toString() ?? ""),
+    softcore: json["softcore"] ?? false,
+    video: json["video"] ?? false,
+    voteAverage: (json["vote_average"] as num?)?.toDouble() ?? 0.0,
+    voteCount: json["vote_count"] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -124,7 +133,9 @@ class Result {
     "overview": overview,
     "popularity": popularity,
     "poster_path": posterPath,
-    "release_date": "${releaseDate.year.toString().padLeft(4, '0')}-${releaseDate.month.toString().padLeft(2, '0')}-${releaseDate.day.toString().padLeft(2, '0')}",
+    "release_date": releaseDate == null
+        ? null
+        : "${releaseDate!.year.toString().padLeft(4, '0')}-${releaseDate!.month.toString().padLeft(2, '0')}-${releaseDate!.day.toString().padLeft(2, '0')}",
     "softcore": softcore,
     "video": video,
     "vote_average": voteAverage,
@@ -134,12 +145,14 @@ class Result {
 
 enum OriginalLanguage {
   EN,
-  ES
+  ES,
+  OTHER,
 }
 
 final originalLanguageValues = EnumValues({
   "en": OriginalLanguage.EN,
-  "es": OriginalLanguage.ES
+  "es": OriginalLanguage.ES,
+  "other": OriginalLanguage.OTHER,
 });
 
 class EnumValues<T> {

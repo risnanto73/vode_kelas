@@ -18,8 +18,10 @@ class MovieVideos {
   });
 
   factory MovieVideos.fromJson(Map<String, dynamic> json) => MovieVideos(
-    id: json["id"],
-    results: List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+    id: json["id"] ?? 0,
+    results: json["results"] == null
+        ? []
+        : List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -38,7 +40,7 @@ class Result {
   final Type type;
   final bool official;
   final String id;
-  final DateTime publishedAt;
+  final DateTime? publishedAt;
 
   Result({
     required this.iso6391,
@@ -54,16 +56,16 @@ class Result {
   });
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    iso6391: iso6391Values.map[json["iso_639_1"]]!,
-    iso31661: iso31661Values.map[json["iso_3166_1"]]!,
-    name: json["name"],
-    key: json["key"],
-    site: siteValues.map[json["site"]]!,
-    size: json["size"],
-    type: typeValues.map[json["type"]]!,
-    official: json["official"],
-    id: json["id"],
-    publishedAt: DateTime.parse(json["published_at"]),
+    iso6391: iso6391Values.map[json["iso_639_1"]] ?? Iso6391.OTHER,
+    iso31661: iso31661Values.map[json["iso_3166_1"]] ?? Iso31661.OTHER,
+    name: json["name"] ?? "",
+    key: json["key"] ?? "",
+    site: siteValues.map[json["site"]] ?? Site.OTHER,
+    size: json["size"] ?? 0,
+    type: typeValues.map[json["type"]] ?? Type.CLIP,
+    official: json["official"] ?? false,
+    id: json["id"] ?? "",
+    publishedAt: DateTime.tryParse(json["published_at"]?.toString() ?? ""),
   );
 
   Map<String, dynamic> toJson() => {
@@ -76,32 +78,38 @@ class Result {
     "type": typeValues.reverse[type],
     "official": official,
     "id": id,
-    "published_at": publishedAt.toIso8601String(),
+    "published_at": publishedAt?.toIso8601String(),
   };
 }
 
 enum Iso31661 {
-  US
+  US,
+  OTHER,
 }
 
 final iso31661Values = EnumValues({
-  "US": Iso31661.US
+  "US": Iso31661.US,
+  "OTHER": Iso31661.OTHER,
 });
 
 enum Iso6391 {
-  EN
+  EN,
+  OTHER,
 }
 
 final iso6391Values = EnumValues({
-  "en": Iso6391.EN
+  "en": Iso6391.EN,
+  "other": Iso6391.OTHER,
 });
 
 enum Site {
-  YOU_TUBE
+  YOU_TUBE,
+  OTHER,
 }
 
 final siteValues = EnumValues({
-  "YouTube": Site.YOU_TUBE
+  "YouTube": Site.YOU_TUBE,
+  "Other": Site.OTHER,
 });
 
 enum Type {

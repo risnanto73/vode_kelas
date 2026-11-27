@@ -22,10 +22,16 @@ class MovieImages {
   });
 
   factory MovieImages.fromJson(Map<String, dynamic> json) => MovieImages(
-    id: json["id"],
-    backdrops: List<Backdrop>.from(json["backdrops"].map((x) => Backdrop.fromJson(x))),
-    logos: List<Backdrop>.from(json["logos"].map((x) => Backdrop.fromJson(x))),
-    posters: List<Backdrop>.from(json["posters"].map((x) => Backdrop.fromJson(x))),
+    id: json["id"] ?? 0,
+    backdrops: json["backdrops"] == null
+        ? []
+        : List<Backdrop>.from(json["backdrops"].map((x) => Backdrop.fromJson(x))),
+    logos: json["logos"] == null
+        ? []
+        : List<Backdrop>.from(json["logos"].map((x) => Backdrop.fromJson(x))),
+    posters: json["posters"] == null
+        ? []
+        : List<Backdrop>.from(json["posters"].map((x) => Backdrop.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -58,14 +64,14 @@ class Backdrop {
   });
 
   factory Backdrop.fromJson(Map<String, dynamic> json) => Backdrop(
-    aspectRatio: json["aspect_ratio"]?.toDouble(),
-    height: json["height"],
+    aspectRatio: (json["aspect_ratio"] as num?)?.toDouble() ?? 0.0,
+    height: json["height"] ?? 0,
     iso31661: json["iso_3166_1"],
     iso6391: json["iso_639_1"],
-    filePath: json["file_path"],
-    voteAverage: json["vote_average"]?.toDouble(),
-    voteCount: json["vote_count"],
-    width: json["width"],
+    filePath: json["file_path"] ?? "",
+    voteAverage: (json["vote_average"] as num?)?.toDouble() ?? 0.0,
+    voteCount: json["vote_count"] ?? 0,
+    width: json["width"] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {

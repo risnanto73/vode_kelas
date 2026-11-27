@@ -16,7 +16,9 @@ class MovieList {
   });
 
   factory MovieList.fromJson(Map<String, dynamic> json) => MovieList(
-    genres: List<Genre>.from(json["genres"].map((x) => Genre.fromJson(x))),
+    genres: json["genres"] == null
+        ? []
+        : List<Genre>.from(json["genres"].map((x) => Genre.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -34,8 +36,8 @@ class Genre {
   });
 
   factory Genre.fromJson(Map<String, dynamic> json) => Genre(
-    id: json["id"],
-    name: json["name"],
+    id: json["id"] ?? 0,
+    name: json["name"] ?? "",
   );
 
   Map<String, dynamic> toJson() => {
